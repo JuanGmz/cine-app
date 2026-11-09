@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "scaf",
-    "slug": "scaf",
+    "name": "Cine App",
+    "slug": "cine-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "scaf",
-    "userInterfaceStyle": "automatic",
+    "scheme": "cineapp",
+    "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon"
     },
@@ -20,7 +20,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "server",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
