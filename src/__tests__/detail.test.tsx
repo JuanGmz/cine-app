@@ -25,7 +25,7 @@ const mockMovie = (value: object) => (useMovie as jest.Mock).mockReturnValue(val
 
 describe('MovieDetail', () => {
   it('shows all movie fields', async () => {
-    mockMovie({ data: full, isLoading: false, isError: false });
+    mockMovie({ data: full, isPending: false, isError: false });
     await render(<MovieDetail />);
     expect(screen.getAllByText('Blade Runner').length).toBeGreaterThan(0);
     expect(screen.getByText(/1982/)).toBeTruthy();
@@ -39,7 +39,7 @@ describe('MovieDetail', () => {
   it('shows fallbacks (never "null" or "NaN") when optional fields are missing', async () => {
     mockMovie({
       data: { ...full, duration: null, rating: null, synopsis: null, posterUrl: null },
-      isLoading: false,
+      isPending: false,
       isError: false,
     });
     await render(<MovieDetail />);
@@ -49,7 +49,7 @@ describe('MovieDetail', () => {
   });
 
   it('navigates to seats when "Elegir asientos" is pressed', async () => {
-    mockMovie({ data: full, isLoading: false, isError: false });
+    mockMovie({ data: full, isPending: false, isError: false });
     await render(<MovieDetail />);
     await fireEvent.press(screen.getByText('Elegir asientos'));
     expect(router.push).toHaveBeenCalledWith('/movie/m1/seats');
@@ -57,7 +57,7 @@ describe('MovieDetail', () => {
 
   it('shows the error with "Reintentar" and a back action', async () => {
     const refetch = jest.fn();
-    mockMovie({ data: undefined, isLoading: false, isError: true, error: new Error('Película no encontrada'), refetch });
+    mockMovie({ data: undefined, isPending: false, isError: true, error: new Error('Película no encontrada'), refetch });
     await render(<MovieDetail />);
     expect(screen.getByText('Película no encontrada')).toBeTruthy();
     await fireEvent.press(screen.getByText('Reintentar'));

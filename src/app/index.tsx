@@ -10,6 +10,7 @@ import { EmptyView, ErrorView, LoadingView } from '@/components/StateViews';
 import { useCategories } from '@/hooks/useCategories';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useMovies } from '@/hooks/useMovies';
+import { pickFeatured } from '@/lib/featured';
 import { theme } from '@/theme';
 
 const openMovie = (id: string) => router.push(`/movie/${id}`);
@@ -40,7 +41,7 @@ function SearchResults({ search }: { search: string }) {
 function Billboard() {
   const queryClient = useQueryClient();
   const categories = useCategories();
-  const featured = useMovies({ sortBy: 'rating', sortOrder: 'desc', limit: 1 });
+  const featured = useMovies({ sortBy: 'rating', sortOrder: 'desc', limit: 10 });
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -53,14 +54,25 @@ function Billboard() {
   if (categories.isError) {
     return <ErrorView message={(categories.error as Error).message} onRetry={() => categories.refetch()} />;
   }
-  const list = categories.data ?? [];
+  if (featured.isError) {
+    return (
+      <ErrorView
+        message={(featured.error as Error).message}
+        onRetry={() => {
+          categories.refetch();
+          featured.refetch();
+        }}
+      />
+    );
+  }
+  const list = (categories.data ?? []).filter((c) => c._count?.movies !== 0);
   if (list.length === 0) return <EmptyView message="Aún no hay películas en cartelera" />;
 
   return (
     <FlatList
       data={list}
       keyExtractor={(c) => c.id}
-      ListHeaderComponent={<CinemaScreen movie={featured.data?.data[0]} onPress={openMovie} />}
+      ListHeaderComponent={<CinemaScreen movie={pickFeatured(featured.data?.data ?? [])} onPress={openMovie} />}
       renderItem={({ item }) => <MovieRow category={item} onPressMovie={openMovie} />}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.accent} />}
       contentContainerStyle={{ paddingBottom: theme.spacing.xl }}

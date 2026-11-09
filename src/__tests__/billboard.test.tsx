@@ -36,6 +36,21 @@ describe('BillboardScreen', () => {
     expect(screen.getByText('Reintentar')).toBeTruthy();
   });
 
+  it('shows the empty state when categories exist but none has movies', async () => {
+    mockCategories({ data: [{ id: 'c1', name: 'Acción', _count: { movies: 0 } }] });
+    await renderScreen();
+    expect(screen.getByText('Aún no hay películas en cartelera')).toBeTruthy();
+    expect(screen.queryByText('Acción')).toBeNull();
+  });
+
+  it('shows an error with "Reintentar" when the featured movie query fails', async () => {
+    mockCategories({ data: [{ id: 'c1', name: 'Acción', _count: { movies: 2 } }] });
+    (useMovies as jest.Mock).mockReturnValue({ ...idle, isError: true, error: new Error('Error interno del servidor') });
+    await renderScreen();
+    expect(screen.getByText('Error interno del servidor')).toBeTruthy();
+    expect(screen.getByText('Reintentar')).toBeTruthy();
+  });
+
   it('shows the empty state only when the API returned zero categories', async () => {
     mockCategories({ data: [] });
     await renderScreen();

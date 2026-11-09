@@ -23,3 +23,9 @@ describe('formatRating', () => {
     expect(formatRating(undefined)).toBe('Sin calificación');
   });
 });
+
+describe('formatRating with the API default of 0', () => {
+  it('treats 0 (unrated default) as missing', () => {
+    expect(formatRating(0)).toBe('Sin calificación');
+  });
+});

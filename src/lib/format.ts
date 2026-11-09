@@ -7,6 +7,6 @@ export function formatDuration(min?: number | null): string {
 }
 
 export function formatRating(r?: number | null): string {
-  if (r === null || r === undefined || Number.isNaN(r)) return 'Sin calificación';
+  if (!r || r <= 0 || Number.isNaN(r)) return 'Sin calificación';
   return `${r.toFixed(1)}/10`;
 }

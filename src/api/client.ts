@@ -1,6 +1,7 @@
 import type { Meta } from './types';
 
 const DEFAULT_URL = 'http://localhost:3000/api';
+const TIMEOUT_MS = 10_000;
 
 export class ApiError extends Error {
   code?: string;
@@ -28,10 +29,14 @@ function buildQuery(params?: Params): string {
 export async function apiGet<T>(path: string, params?: Params): Promise<{ data: T; meta?: Meta }> {
   const base = process.env.EXPO_PUBLIC_API_URL || DEFAULT_URL;
   let res: Response;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    res = await fetch(`${base}${path}${buildQuery(params)}`);
+    res = await fetch(`${base}${path}${buildQuery(params)}`, { signal: controller.signal });
   } catch {
     throw new ApiError('No se pudo conectar con el servidor');
+  } finally {
+    clearTimeout(timer);
   }
 
   let body: any;

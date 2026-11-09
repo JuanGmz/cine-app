@@ -44,3 +44,22 @@ describe('apiGet', () => {
     expect(url).not.toContain('search');
   });
 });
+
+describe('apiGet timeout', () => {
+  afterEach(() => jest.useRealTimers());
+
+  it('aborts a hanging request after 10s and throws the connection ApiError', async () => {
+    jest.useFakeTimers();
+    (globalThis as any).fetch = jest.fn(
+      (_url: string, init?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(new Error('aborted')));
+        }),
+    );
+    const pending = apiGet('/movies').catch((e) => e);
+    await jest.advanceTimersByTimeAsync(10_000);
+    const err = await pending;
+    expect(err).toBeInstanceOf(ApiError);
+    expect(err.message).toBe('No se pudo conectar con el servidor');
+  });
+});
