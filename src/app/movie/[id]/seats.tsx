@@ -11,13 +11,13 @@ const money = (n: number) => `$${n.toFixed(2)}`;
 
 export default function SeatsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: movie, isLoading, isError, error, refetch } = useMovie(id);
+  const { data: movie, isPending, isError, error, refetch } = useMovie(id);
   const [showtime, setShowtime] = useState<string>(SHOWTIMES[0]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const occupied = useMemo(() => getOccupiedSeats(id, showtime), [id, showtime]);
 
-  if (isLoading) return <LoadingView />;
+  if (isPending) return <LoadingView />;
   if (isError || !movie) {
     return (
       <ErrorView

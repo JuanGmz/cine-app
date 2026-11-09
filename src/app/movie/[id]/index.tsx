@@ -8,9 +8,9 @@ import { theme } from '@/theme';
 
 export default function MovieDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: movie, isLoading, isError, error, refetch } = useMovie(id);
+  const { data: movie, isPending, isError, error, refetch } = useMovie(id);
 
-  if (isLoading) return <LoadingView />;
+  if (isPending) return <LoadingView />;
   if (isError || !movie) {
     return (
       <View style={styles.screen}>

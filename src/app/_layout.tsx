@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { shouldRetry } from '@/lib/query';
 import { theme } from '@/theme';
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 60_000 } },
+  defaultOptions: { queries: { retry: shouldRetry, staleTime: 60_000 } },
 });
 
 export default function RootLayout() {

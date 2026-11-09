@@ -15,8 +15,8 @@ import { theme } from '@/theme';
 const openMovie = (id: string) => router.push(`/movie/${id}`);
 
 function SearchResults({ search }: { search: string }) {
-  const { data, isLoading, isError, error, refetch } = useMovies({ search, limit: 30 });
-  if (isLoading) return <LoadingView />;
+  const { data, isPending, isError, error, refetch } = useMovies({ search, limit: 30 });
+  if (isPending) return <LoadingView />;
   if (isError) return <ErrorView message={(error as Error).message} onRetry={() => refetch()} />;
   const movies = data?.data ?? [];
   if (movies.length === 0) return <EmptyView message="Sin resultados" />;
@@ -49,7 +49,7 @@ function Billboard() {
     setRefreshing(false);
   };
 
-  if (categories.isLoading) return <LoadingView />;
+  if (categories.isPending) return <LoadingView />;
   if (categories.isError) {
     return <ErrorView message={(categories.error as Error).message} onRetry={() => categories.refetch()} />;
   }
