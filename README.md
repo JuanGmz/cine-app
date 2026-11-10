@@ -5,7 +5,7 @@ App móvil (Expo + React Native + TypeScript) que simula una sala de cines: cart
 ## Requisitos
 
 - Node.js 20+
-- La API `api-movies` corriendo (por defecto en `http://localhost:3000`). Ver su README: necesita PostgreSQL y `pnpm run dev`.
+- La API `api-movies` corriendo (por defecto en `http://localhost:3000`). Ver su README: necesita MySQL (Docker) y `pnpm run dev`.
 - Simulador de iOS/Android, o la app Expo Go en tu teléfono.
 
 ## Puesta en marcha
@@ -30,7 +30,8 @@ Si cambias `.env`, reinicia `expo start`.
 
 1. **Cartelera** (`src/app/index.tsx`): pantalla de cine con la película mejor calificada, buscador y una fila de pósters por categoría. Las categorías sin películas no se muestran.
 2. **Detalle** (`src/app/movie/[id]/index.tsx`): póster, año, duración, rating, categoría, director y sinopsis.
-3. **Asientos** (`src/app/movie/[id]/seats.tsx`): sala de 8 filas × 10 columnas, 3 horarios, selección múltiple, leyenda y total.
+3. **Asientos** (`src/app/movie/[id]/seats.tsx`): sala de 8 filas × 10 columnas con el ID visible en cada asiento, 3 horarios, selección múltiple, leyenda y total.
+4. **Pago** (`src/app/movie/[id]/payment.tsx`): detalle de la compra (película, función, asientos y total); ahí termina la simulación.
 
 ## Qué es simulado
 
@@ -38,7 +39,7 @@ La API no tiene funciones, horarios ni asientos, así que en el cliente:
 
 - Los horarios (16:00, 18:30, 21:00) y el precio por asiento son fijos (`src/lib/seats.ts`).
 - Los asientos ocupados (~25 %) se generan con una semilla de `movieId + horario`, por lo que son estables entre aperturas.
-- "Confirmar" solo muestra un resumen; no se guarda nada ni se llama a la API.
+- "Pagar" lleva a la pantalla de pago con el detalle de la compra; no se guarda nada ni se llama a la API.
 
 ## Scripts
 

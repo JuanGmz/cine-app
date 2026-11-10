@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ErrorView, LoadingView } from '@/components/StateViews';
 import { SeatGrid } from '@/components/SeatGrid';
 import { useMovie } from '@/hooks/useMovie';
@@ -28,18 +28,24 @@ export default function SeatsScreen() {
   }
 
   const seats = [...selected].sort();
-  const confirm = () =>
-    Alert.alert(
-      '¡Reserva simulada!',
-      `${movie.title}\nFunción: ${showtime}\nAsientos: ${seats.join(', ')}\nTotal: ${money(totalPrice(selected))}`,
-      [{ text: 'OK', onPress: () => setSelected(new Set()) }],
-    );
+  const goToPayment = () =>
+    router.push({
+      pathname: '/movie/[id]/payment',
+      params: { id, showtime, seats: seats.join(', ') },
+    });
 
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>{movie.title}</Text>
 
+        <View style={styles.legend}>
+          <LegendItem color={theme.colors.seatFree} label="Libre" />
+          <LegendItem color={theme.colors.seatTaken} label="Ocupado" />
+          <LegendItem color={theme.colors.seatSelected} label="Elegido" />
+        </View>
+
+        <Text style={styles.sectionLabel}>FUNCIONES</Text>
         <View style={styles.showtimes}>
           {SHOWTIMES.map((t) => (
             <Pressable
@@ -64,12 +70,6 @@ export default function SeatsScreen() {
           selected={selected}
           onToggle={(seat) => setSelected((prev) => toggleSeat(prev, seat, occupied))}
         />
-
-        <View style={styles.legend}>
-          <LegendItem color={theme.colors.seatFree} label="Libre" />
-          <LegendItem color={theme.colors.seatTaken} label="Ocupado" />
-          <LegendItem color={theme.colors.seatSelected} label="Elegido" />
-        </View>
       </ScrollView>
 
       <View style={styles.footer}>
@@ -82,10 +82,10 @@ export default function SeatsScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={seats.length === 0}
-          onPress={confirm}
+          onPress={goToPayment}
           style={[styles.cta, seats.length === 0 && styles.ctaDisabled]}
         >
-          <Text style={styles.ctaText}>Confirmar</Text>
+          <Text style={styles.ctaText}>Pagar</Text>
         </Pressable>
       </View>
     </View>
@@ -121,6 +121,13 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent },
   chipText: { color: theme.colors.textMuted, fontWeight: '700' },
   chipTextActive: { color: theme.colors.bg },
+  sectionLabel: {
+    color: theme.colors.textMuted,
+    textAlign: 'center',
+    fontSize: 11,
+    letterSpacing: 3,
+    marginBottom: theme.spacing.sm,
+  },
   screenBar: {
     height: 8,
     backgroundColor: theme.colors.accent,
@@ -136,7 +143,13 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
     marginBottom: theme.spacing.lg,
   },
-  legend: { flexDirection: 'row', justifyContent: 'center', gap: theme.spacing.lg, marginTop: theme.spacing.lg },
+  legend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: theme.spacing.lg,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
+  },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xs + 2 },
   legendDot: { width: 14, height: 14, borderRadius: 4 },
   legendText: { color: theme.colors.textMuted, fontSize: 13 },
